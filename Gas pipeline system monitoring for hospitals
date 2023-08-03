@@ -1,0 +1,40 @@
+#include <Wire.h>  // For I2C communication (if needed)
+#include <Adafruit_Sensor.h> // For Adafruit Gas Sensor Library
+#include <Adafruit_MQTT.h> // For MQTT communication (if needed)
+#include <Adafruit_MQTT_Client.h> // For MQTT communication (if needed)
+
+// Gas sensor setup
+const int gasSensorPin = A0; // Gas sensor analog pin
+const int numReadings = 10;  // Number of gas sensor readings to average
+int gasThreshold = 200;      // Gas concentration threshold for detecting leaks
+
+// Function to read gas sensor values and return the average
+int readGasSensor() {
+  int total = 0;
+  for (int i = 0; i < numReadings; i++) {
+    total += analogRead(gasSensorPin);
+    delay(10);
+  }
+  return total / numReadings;
+}
+
+// Function to check for gas leak
+bool isGasLeakDetected() {
+  int gasValue = readGasSensor();
+  return gasValue > gasThreshold;
+}
+
+void setup() {
+  Serial.begin(9600); // Initialize Serial Monitor
+
+  // Add any necessary setup code for communication modules (e.g., Wi-Fi, MQTT)
+}
+
+void loop() {
+  // Check for gas leak
+  if (isGasLeakDetected()) {
+    Serial.println("Gas leak detected! Alert hospital staff.");
+    // Add code here to trigger the alert mechanism (e.g., sending an alert through Wi-Fi or MQTT)
+  } else {
+    Serial.println("Gas concentration within normal range.");
+  }
